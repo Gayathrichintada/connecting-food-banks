@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Donor Register</title>
+</head>
+<style>
+    input, button {
+        width: 100%;
+        padding: 15px;
+        margin-bottom: 5px;
+        font-size: 16px;
+    }
+    form {
+        display: flex;
+        flex-direction: column;
+        width: 400px;
+        margin: 10px auto;
+        background-color: plum;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(165, 2, 173, 0.1);
+        max-width: 100%;
+    }
+    button {
+        background-color: rgb(21, 206, 231);
+        cursor: pointer;
+    }
+    .header {
+        background-color: rgb(21, 206, 231);
+        text-align: center;
+    }
+</style>
+<body>
+    <form id="donorForm">
+        <h1 class="header">Donor Registration</h1>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" placeholder="Enter name" required>
+        
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Enter password" required>
+        
+        <label for="number">Number:</label>
+        <input type="number" id="number" name="number" placeholder="Enter number" required>
+        
+        <label for="address">Address:</label>
+        <textarea id="address" name="address" rows="3" placeholder="Enter your address" required></textarea>
+        
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="responseMessage"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
