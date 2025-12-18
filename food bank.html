@@ -3,40 +3,84 @@
 <head>
     <title>Food Bank App</title>
     <style>
-        .button {
-            color: aquamarine;
-        }
-        .container {
-            max-width: 100%;
-            padding: 2px;
-            text-shadow: 1px 1px 1px rgb(255, 200, 200);
-            color: red;
-            text-align: center;
-        }
-        h1 {
-            font-size: 50px;
-        }
-        body {
-            background: linear-gradient(to bottom, aqua 10%, white 50%);
-        }
-        a {
-            display: inline-block;
-            padding: 10px 20px;
-            margin: 5px;
-            color: red;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
-        }
-        .image {
-            height: auto;
-            border-radius: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-    </style>
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+}
+
+#nav {
+  background-color: #149ed5;
+  padding: 10px;
+  text-align: center;
+}
+
+#nav a {
+  display: inline-block;
+  padding: 10px 20px;
+  margin: 5px;
+  color: white;
+  background: #0b6a91;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+#nav a:hover {
+  background: #084e6a;
+}
+
+
+.container {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  padding: 30px;
+  flex-wrap: wrap;
+}
+
+.card {
+  background: white;
+  width: 350px;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card h2 {
+  text-align: center;
+  color: #149ed5;
+  margin-bottom: 15px;
+}
+
+.card div {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background-color: #149ed5;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0b6a91;
+}
+img {
+  display: block;
+  margin: 20px auto;
+  border-radius: 15px;
+}
+
+</style>
+
 </head>
 <body>
 
@@ -44,14 +88,14 @@
         <h1>CONNECTING FOOD BANKS</h1>
     </div>
 
-    <div id="nav">
-        <hr>
-        <a href="about.html">About</a>
-        <a href="donor-register.html">Donor Register</a>
-        <a href="food-bank.html">Food Bank Register</a>
-        <a href="user-register.html">User Register</a>
-        <hr>
-    </div>
+   <div id="nav">
+    <a href="food bank">Home</a>
+  <a href="about.html">About</a>
+  <a href="donor-register.html">Donor</a>
+  <a href="food-bank.html">Food Bank</a>
+  <a href="user-register.html">User</a>
+</div>
+
 
     <div class="image">
         <img src="foodbank.jpeg" alt="Food Bank">
