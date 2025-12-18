@@ -1,147 +1,128 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>User Registration</title>
-</head>
+<title>User</title>
 <style>
-    input, button, textarea {
-        width: 100%;
-        padding: 5px;
-        margin-bottom: 5px;
-        font-size: 16px;
-    }
+body{font-family:Arial;background:#f4f4f4;margin:0;}
 
-    button {
-        background-color: rgb(21, 206, 231);
-        color: white;
-        cursor: pointer;
-    }
+.card{background:white;max-width:400px;margin:30px auto;padding:20px;
+border-radius:10px;box-shadow:0 4px 6px rgba(0,0,0,0.1);}
+input,textarea,button{width:100%;padding:8px;margin:5px 0;}
+button{background:#149ed5;color:white;border:none;}
+/* ===== NAVBAR ===== */
+#nav {
+  background-color: #1aa0d8;
+  padding: 15px 0;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
 
-    a {
-            display: inline-block;
-            padding: 10px 20px;
-            margin: 5px;
-            color: red;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
-        }
+#nav a {
+  text-decoration: none;
+  color: white;
+  background-color: #0b6a91;
+  padding: 10px 22px;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
 
-    form {
-        display: flex;
-        flex-direction: column;
-        width: 400px;
-        margin: 20px auto;
-        background-color: plum;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(165, 2, 173, 0.2);
-        max-width: 100%;
-    }
+#nav a:hover {
+  background-color: #084e6a;
+}
+
 </style>
+</head>
+
 <body>
-    <div id="nav">
-        <hr>
-        <a href="food bank.html">home</a>
-        <a href="about.html">About</a>
-        <a href="donor-register.html">Donor Register</a>
-        <a href="food-bank.html">Food Bank Register</a>
-        <a href="user-register.html">User Register</a>
-        <hr>
-    </div>
-    
 
-    <div class="container">
-        <div class="box-1"> 
+<div id="nav">
+  <a href="food bank.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="donor-register.html">Donor</a>
+  <a href="food-bank.html">Food Bank</a>
+  <a href="user-register.html">User</a>
+</div>
 
+<div class="container">
 
-    <form id="userForm">
-        <h1 style="background-color: rgb(21, 206, 231); text-align: center;">User Registration</h1>
-        
-        <label for="name">Your Name:</label>
-        <input type="text" id="name" name="name" placeholder="Enter your name" required>
+  <!-- User Registration -->
+  <div class="card">
+    <h2>User Registration</h2>
+    <input type="text" id="name" placeholder="Name" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <input type="number" id="age" placeholder="Age" required>
+    <input type="number" id="number" placeholder="Phone" required>
+    <textarea id="address" placeholder="Address" required></textarea>
+    <button onclick="registerUser()">Register</button>
+  </div>
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" placeholder="Enter password" required>
+  <!-- Available Donations -->
+  <div class="card">
+    <h2>Available Donations</h2>
+    <input type="number" id="user_id" placeholder="Enter Your User ID" required>
+    <div id="donations-container"></div>
+    <button id="show-donations-btn">Show Donations</button>
+  </div>
 
-        <label for="age">Age:</label>
-        <input type="number" id="age" name="age" placeholder="Enter your age" required>
+</div>
 
-        <label for="number">Contact Number:</label>
-        <input type="number" id="number" name="number" placeholder="Enter your number" required>
-
-        <label for="requestedFood">Food Requested:</label>
-        <input type="text" id="requestedFood" name="requestedFood" placeholder="Enter food item" required>
-
-        <label for="address">Address:</label>
-        <textarea id="address" name="address" rows="3" placeholder="Enter your address" required></textarea>
-        <input type="hidden" name="role" value="user">
-
-        <button type="submit">Submit</button>
-    </form></div>
-    <h2>Login</h2>
-<form id="loginForm">
-    <input type="text" name="name" placeholder="Name" required><br>
-    <input type="password" name="password" placeholder="Password" required><br>
-    <button type="submit">Login</button>
-</form>
-<p id="loginMessage"></p>
-
-<div class="box-2">
-    <form id="request-form">
-        <label for="user_id">User ID:</label>
-        <input type="number" id="user_id" name="user_id" required><br><br>
-    
-        <label for="food_item">Food Item:</label>
-        <input type="text" id="food_item" name="food_item" required><br><br>
-    
-        <button type="submit">Submit Request</button>
-    </form>
-    
-    <button id="add-request-button">Add Request</button>
-
-    <div id="responseMessage"></div>
-
-    </div></div>
-    <button onclick="fetchAvailableDonations()">View Available Donations</button>
-<div id="donations-container"></div>
-<p id="loginMessage"></p>
-
-<!-- Add the script at the bottom of the body -->
 <script>
-document.getElementById("loginForm").addEventListener("submit", async function (event) {
-    event.preventDefault();
+const donationsContainer = document.getElementById("donations-container");
 
-    const formData = {
-        name: event.target.name.value,
-        password: event.target.password.value
-    };
+// Register User
+function registerUser() {
+  const name = document.getElementById("name").value;
+  const password = document.getElementById("password").value;
+  const age = document.getElementById("age").value;
+  const phone = document.getElementById("number").value;
+  const address = document.getElementById("address").value;
 
-    try {
-        const response = await fetch("http://localhost:3001/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formData),
-        });
+  fetch("http://localhost:3000/user/register", {
+    method:"POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({name,password,age,phone,address})
+  })
+  .then(res => res.json())
+  .then(data => alert(data.message))
+  .catch(err => console.error(err));
+}
 
-        const result = await response.json();
-        if (response.ok) {
-            document.getElementById("loginMessage").innerText = `Welcome! Your ID is ${result.userId}`;
-            localStorage.setItem("userId", result.userId); // Save for future requests
-        } else {
-            document.getElementById("loginMessage").innerText = result.message || "Login failed!";
-        }
-    } catch (error) {
-        console.error("Login error:", error);
-        document.getElementById("loginMessage").innerText = "Network error";
-    }
-});
+// Show all donations
+document.getElementById("show-donations-btn").addEventListener("click", fetchDonations);
+function fetchDonations() {
+  donationsContainer.innerHTML = "";
+  fetch("http://localhost:3000/donations")
+    .then(res => res.json())
+    .then(data => {
+      if(data.length===0){ donationsContainer.textContent="No donations available."; return; }
+      data.forEach(d => {
+        const div = document.createElement("div");
+        div.innerHTML = `
+          Donor ID: ${d.donor_id}, Food: ${d.food_item}, Quantity: ${d.quantity}
+          <button onclick="requestFromDonor(${d.donor_id},'${d.food_item}',${d.quantity})">Request This</button><hr>
+        `;
+        donationsContainer.appendChild(div);
+      });
+    }).catch(err=>console.error(err));
+}
+
+// Send request to donor
+function requestFromDonor(donorId, foodItem, quantity) {
+  const userId = parseInt(document.getElementById("user_id").value);
+  if(!userId) return alert("Please enter your User ID.");
+
+  fetch("http://localhost:3000/user/sendRequest", {
+    method:"POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({user_id:userId, donor_id:donorId, food_item:foodItem, quantity})
+  })
+  .then(res=>res.json())
+  .then(data=>alert(data.message))
+  .catch(err=>console.error(err));
+}
 </script>
-<script src="app.js"></script>
-
 
 </body>
 </html>
