@@ -1,96 +1,100 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Food Bank Registration</title>
-    <style>
-        input, button, textarea {
-            width: 100%;
-            padding: 5px;
-            margin-bottom: 5px;
-            font-size: 16px;
-        }
-
-        button {
-            background-color: rgb(21, 206, 231);
-            color: white;
-            cursor: pointer;
-            border: none;
-            font-size: 18px;
-        }
-    
-
-        form {
-            display: flex;
-            flex-direction: column;
-            width: 400px;
-            margin: 20px auto;
-            background-color: plum;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(165, 2, 173, 0.2);
-            max-width: 100%;
-        }
-
-        .container {
-            display: flex;
-            padding: 50px;
-            column-gap: 100px;
-            justify-content: center;
-        }
-        a {
-            display: inline-block;
-            padding: 10px 20px;
-            margin: 5px;
-            color: red;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
-        }
-
-        .header {
-            text-align: center;
-            background-color: rgb(21, 206, 231);
-            padding: 10px;
-            color: white;
-            border-radius: 5px;
-        }
-    </style>
+<title>Food Bank</title>
+<style>
+body{font-family:Arial;background:#f4f4f4;margin:0;}
+#nav { background-color: #1aa0d8; padding: 15px 0; display: flex; justify-content: center; gap: 15px; }
+#nav a { color:white; background:#0b6a91; padding:10px 22px; border-radius:6px; text-decoration:none; font-weight:bold; }
+.container{display:flex;justify-content:center;gap:30px;padding:30px;flex-wrap:wrap;}
+.card{background:white;padding:20px;width:350px;border-radius:10px;box-shadow:0 4px 6px rgba(0,0,0,0.1);}
+button{width:100%;padding:10px;background:#149ed5;color:white;border:none;margin-top:5px;}
+input{width:100%;padding:8px;margin:5px 0;}
+</style>
 </head>
 <body>
-    <div id="nav">
-        <hr>
-        <a href="food bank.html">home</a>
-        <a href="about.html">About</a>
-        <a href="donor-register.html">Donor Register</a>
-        <a href="food-bank.html">Food Bank Register</a>
-        <a href="user-register.html">User Register</a>
-        <hr>
-    </div>
 
-    <div class="container">
-        <div class="box-1"> 
-            <h1>User Requests</h1>
-            <img src="user.jpeg" alt="User Requests" style="width:100%; height:auto;">
-            <h1>Donor Requests</h1>
-            <img src="donor.jpeg" alt="Donor Requests" style="width:100%; height:auto;">
-        </div>
-        <div class="box-2">
-        <button id="fetch-requests-button">Show Requests</button>
-    <div id="requests-container"></div>
-   
-<div id="donations-container"></div>
+<div id="nav">
+  <a href="food bank.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="donor-register.html">Donor</a>
+  <a href="food-bank.html">Food Bank</a>
+  <a href="user-register.html">User</a>
+</div>
 
-<!-- Optional buttons if needed -->
-<button id="fetch-requests-button">Refresh Requests</button>
-<button id="fetch-donations-button">Refresh Donations</button>
+<div class="container">
 
-    </div>
-    </div>
+  <!-- USER REQUESTS -->
+  <div class="card">
+    <h2>User Requests</h2>
+    <div id="user-requests"></div>
+    <button onclick="fetchUserRequests()">Show Requests</button>
+  </div>
 
-    <div id="responseMessage"></div>
+  <!-- ACCEPT REQUEST -->
+  <div class="card">
+    <h2>Accept Request</h2>
+    <input id="request_id" placeholder="Request ID">
+    <input id="donor_id" placeholder="Donor ID">
+    <button onclick="acceptRequest()">Accept</button>
+  </div>
 
-    <script src="app.js"></script>
+</div>
+
+<script>
+const userRequestsContainer = document.getElementById("user-requests");
+
+// Fetch pending user requests
+function fetchUserRequests(){
+  fetch("http://localhost:3000/requests")
+    .then(res => res.json())
+    .then(data => {
+      userRequestsContainer.innerHTML = "";
+
+      if(data.length === 0){
+        userRequestsContainer.innerHTML = "No pending requests.";
+        return;
+      }
+
+      data.forEach(req => {
+        const div = document.createElement("div");
+        div.innerHTML = `
+          <b>Request ID:</b> ${req.id}<br>
+          <b>User:</b> ${req.user_name}<br>
+          <b>Donor:</b> ${req.donor_name}<br>
+          <b>Food:</b> ${req.food_item}<br>
+          <b>Quantity:</b> ${req.quantity}<br>
+          <hr>
+        `;
+        userRequestsContainer.appendChild(div);
+      });
+    })
+    .catch(err => console.error(err));
+}
+
+// Accept request
+function acceptRequest(){
+  const requestId = document.getElementById("request_id").value;
+  const donorId = document.getElementById("donor_id").value;
+
+  if(!requestId || !donorId){
+    alert("Please enter Request ID and Donor ID");
+    return;
+  }
+
+  fetch("http://localhost:3000/foodbank/acceptRequest", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ request_id: requestId, donor_id: donorId })
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert(data.error || data.message);
+    fetchUserRequests(); // refresh list
+  })
+  .catch(err => console.error(err));
+}
+</script>
 
 </body>
 </html>
