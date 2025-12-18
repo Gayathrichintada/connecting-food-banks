@@ -1,134 +1,147 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Donor Register</title>
-</head>
+<title>Donor</title>
 <style>
-    input, button, textarea {
-        width: 100%;
-        padding: 5px;
-        margin-bottom: 5px;
-        font-size: 16px;
-    }
-    form {
-        display: flex;
-        flex-direction: column;
-        width: 400px;
-        margin: 10px auto;
-        background-color: plum;
-        padding: 10px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(165, 2, 173, 0.1);
-        max-width: 100%;
-    }
-   
-    button {
-        background-color: rgb(21, 206, 231);
-        cursor: pointer;
-    }
-    a {
-            display: inline-block;
-            padding: 10px 20px;
-            margin: 5px;
-            color: red;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
-        }
-    .header {
-        background-color: rgb(21, 206, 231);
-        text-align: center;
-    }
+body{font-family:Arial;background:#f4f4f4;margin:0;}
+/* ===== NAVBAR ===== */
+#nav {
+  background-color: #1aa0d8;
+  padding: 15px 0;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+#nav a {
+  text-decoration: none;
+  color: white;
+  background-color: #0b6a91;
+  padding: 10px 22px;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+#nav a:hover {
+  background-color: #084e6a;
+}
+
+
+.card{background:white;max-width:400px;margin:30px auto;padding:20px;
+border-radius:10px;box-shadow:0 4px 6px rgba(0,0,0,0.1);}
+input,textarea,button{width:100%;padding:8px;margin:5px 0;}
+button{background:#149ed5;color:white;border:none;}
 </style>
+</head>
+
 <body>
-    <div id="nav">
-        <hr>
-        <a href="food bank.html">home</a>
-        <a href="about.html">About</a>
-        <a href="donor-register.html">Donor Register</a>
-        <a href="food-bank.html">Food Bank Register</a>
-        <a href="user-register.html">User Register</a>
-        <hr>
+
+<div id="nav">
+  <a href="food bank.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="donor-register.html">Donor Register</a>
+  <a href="food-bank.html">Food Bank</a>
+  <a href="user-register.html">User</a>
+</div>
     </div>
-    <div class="container">
-        <div class="box-1"> 
-    <form id="donorForm">
-        <h1 class="header">Donor Registration</h1>
-    
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" placeholder="Enter name" required>
-        
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" placeholder="Enter password" required>
-        
-        <label for="number">Number:</label>
-        <input type="number" id="number" name="number" placeholder="Enter number" required>
-        
-        <label for="address">Address:</label>
-        <textarea id="address" name="address" rows="3" placeholder="Enter your address" required></textarea>
-        <input type="hidden" name="role" value="donor">
+  </div>
+</nav>
 
-        <button type="submit">Submit</button>
-    </form></div>
-    <h2>Login</h2>
-<form id="loginForm">
-    <input type="text" name="name" placeholder="Name" required><br>
-    <input type="password" name="password" placeholder="Password" required><br>
-    <button type="submit">Login</button>
-</form>
-<p id="loginMessage"></p>
+<div class="container mt-4">
 
-<div class="box-2">
-    <form id="request-form">
-        <label for="user_id">User ID:</label>
-        <input type="number" id="user_id" name="user_id" required><br><br>
-    
-        <label for="food_item">Food Item:</label>
-        <input type="text" id="food_item" name="food_item" required><br><br>
-    
-        <button type="submit">Submit Request</button>
-    </form>
-    
-    <button id="add-request-button">Add Request</button>
-    </div></div>
+  <!-- Donor Registration -->
+  <div class="card shadow mb-4">
+    <div class="card-header bg-primary text-white">
+      <h3>Donor Registration</h3>
+    </div>
+    <div class="card-body">
+      <form id="donorForm">
+        <input type="text" id="name" class="form-control mb-2" placeholder="Full Name" required>
+        <input type="password" id="password" class="form-control mb-2" placeholder="Password" required>
+        <input type="number" id="number" class="form-control mb-2" placeholder="Mobile Number" required>
+        <textarea id="address" class="form-control mb-2" placeholder="Address" required></textarea>
+        <button type="submit" class="btn btn-success w-100">Register</button>
+      </form>
+      <p id="registerMessage" class="text-center mt-2 text-danger"></p>
+    </div>
+  </div>
 
-    <div id="responseMessage"></div>
-    <p id="loginMessage"></p>
+  <!-- Donation Form -->
+  <div class="card shadow">
+    <div class="card-header bg-success text-white">
+      <h3>Donate Food</h3>
+    </div>
+    <div class="card-body">
+      <form id="donationForm">
+        <input type="number" id="donor_id" class="form-control mb-2" placeholder="Enter Donor ID" required>
+        <input type="text" id="food_item" class="form-control mb-2" placeholder="Food Item" required>
+        <input type="number" id="quantity" class="form-control mb-2" placeholder="Quantity" required>
+        <button type="submit" class="btn btn-primary w-100">Donate</button>
+      </form>
+      <p id="donationMsg" class="text-center mt-2 text-danger"></p>
+    </div>
+  </div>
 
-<!-- Add the script at the bottom of the body -->
+</div>
+
 <script>
-document.getElementById("loginForm").addEventListener("submit", async function (event) {
-    event.preventDefault();
+document.getElementById("donorForm").addEventListener("submit", async function(e){
+  e.preventDefault();
+  const donorData = {
+    name: document.getElementById("name").value,
+    password: document.getElementById("password").value,
+    phone: document.getElementById("number").value,
+    address: document.getElementById("address").value
+  };
 
-    const formData = {
-        name: event.target.name.value,
-        password: event.target.password.value
-    };
+  try {
+    const response = await fetch("http://localhost:3000/donor/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(donorData)
+    });
 
-    try {
-        const response = await fetch("http://localhost:3001/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formData),
-        });
-
-        const result = await response.json();
-        if (response.ok) {
-            document.getElementById("loginMessage").innerText = `Welcome! Your ID is ${result.userId}`;
-            localStorage.setItem("userId", result.userId); // Save for future requests
-        } else {
-            document.getElementById("loginMessage").innerText = result.message || "Login failed!";
-        }
-    } catch (error) {
-        console.error("Login error:", error);
-        document.getElementById("loginMessage").innerText = "Network error";
+    const result = await response.json();
+    if(response.ok){
+      alert("Donor Registered! Your ID: " + result.donorId);
+      document.getElementById("donor_id").value = result.donorId;
+      document.getElementById("registerMessage").innerText = "";
+    } else {
+      document.getElementById("registerMessage").innerText = result.error || "Registration failed";
     }
+  } catch(err) {
+    document.getElementById("registerMessage").innerText = "Network Error";
+  }
+});
+
+document.getElementById("donationForm").addEventListener("submit", async function(e){
+  e.preventDefault();
+  const donationData = {
+    donor_id: document.getElementById("donor_id").value,
+    food_item: document.getElementById("food_item").value,
+    quantity: document.getElementById("quantity").value
+  };
+
+  try {
+    const response = await fetch("http://localhost:3000/donor/donate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(donationData)
+    });
+
+    const result = await response.json();
+    if(response.ok){
+      alert("Donation Successful!");
+      document.getElementById("donationMsg").innerText = "";
+    } else {
+      document.getElementById("donationMsg").innerText = result.error || "Donation failed";
+    }
+  } catch(err) {
+    document.getElementById("donationMsg").innerText = "Network Error";
+  }
 });
 </script>
 
-    <script src="app.js"></script>
 </body>
 </html>
