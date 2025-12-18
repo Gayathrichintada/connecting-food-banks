@@ -1,148 +1,150 @@
-require('dotenv').config({ path: './.env' });
-
+require("dotenv").config();
 const express = require("express");
 const mysql = require("mysql2");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const cors = require("cors");
 
 const app = express();
-app.use(express.json());
-app.use(cors());
+const PORT = process.env.PORT || 3000;
 
-const connection = mysql.createConnection({
+app.use(cors());
+app.use(express.json());
+
+const db = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
+    database: process.env.DB_NAME
 });
 
-connection.connect((err) => {
-    if (err) {
-        console.error("Error connecting to database:", err);
-        return;
-    }
-    console.log("Connected to MySQL database");
+db.connect(err => {
+    if (err) console.error("❌ DB error", err);
+    else console.log("📦 Database connected");
 });
 
-// Food Bank Registration
-app.post("/foodbank/register", async (req, res) => {
-    try {
-        const { name, password, number, address } = req.body;
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const query = "INSERT INTO users (name, password, number, address, role) VALUES (?, ?, ?, ?, ?)";
-        connection.query(query, [name, hashedPassword, number, address, "foodbank"], (err, result) => {
-            if (err) return res.status(500).json({ error: err.message });
-            res.json({ message: "Food bank registered successfully", userId: result.insertId });
-        });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
+/* ================= DONOR ROUTES ================= */
 
-// Donor Registration
+// Register Donor
 app.post("/donor/register", async (req, res) => {
-    try {
-        const { name, password, number, address } = req.body;
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const query = "INSERT INTO users (name, password, number, address, role) VALUES (?, ?, ?, ?, ?)";
-        connection.query(query, [name, hashedPassword, number, address, "donor"], (err, result) => {
-            if (err) return res.status(500).json({ error: err.message });
-            res.json({ message: "Donor registered successfully", userId: result.insertId });
-        });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+    const { name, password, phone, address } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    db.query(
+        "INSERT INTO donors (name,password,phone,address) VALUES (?,?,?,?)",
+        [name, hashedPassword, phone, address],
+        (err, result) => {
+            if (err) return res.status(500).json({ error: "Database error" });
+            res.json({ message: "Donor registered successfully", donorId: result.insertId });
+        }
+    );
 });
 
-// User Registration
-app.post("/user/register", async (req, res) => {
-    try {
-        const { name, password, age, number, requestedFood, address } = req.body;
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const query = "INSERT INTO users (name, password, age, number, requestedFood, address, role) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        connection.query(query, [name, hashedPassword, age, number, requestedFood, address, "user"], (err, result) => {
-            if (err) return res.status(500).json({ error: err.message });
-            res.json({ message: "User registered successfully", userId: result.insertId });
-        });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// User Login
-app.post("/login", (req, res) => {
-    const { number, password } = req.body;
-
-    const query = "SELECT * FROM users WHERE number = ?";
-    connection.query(query, [number], async (err, results) => {
-        if (err) return res.status(500).json({ error: err.message });
-        if (results.length === 0) return res.status(401).json({ message: "User not found" });
-
-        const isMatch = await bcrypt.compare(password, results[0].password);
-        if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
-
-        res.json({
-            message: "Login successful",
-            userId: results[0].id,
-            role: results[0].role,
-            name: results[0].name
-        });
-    });
-});
-
-// Donor Donation
-app.post("/donate", (req, res) => {
+// Donate Food
+app.post("/donor/donate", (req, res) => {
     const { donor_id, food_item, quantity } = req.body;
-    const query = "INSERT INTO donations (donor_id, food_item, quantity) VALUES (?, ?, ?)";
 
-    connection.query(query, [donor_id, food_item, quantity], (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: "Food donation recorded successfully" });
-    });
+    db.query(
+        "INSERT INTO donations (donor_id, food_item, quantity, status) VALUES (?,?,?, 'available')",
+        [donor_id, food_item, quantity],
+        err => {
+            if (err) return res.status(500).json({ error: "Database error" });
+            res.json({ message: "Food donated successfully" });
+        }
+    );
 });
 
-// User Food Request
-app.post("/request", (req, res) => {
-    const { user_id, food_item } = req.body;
-    const query = "INSERT INTO requests (user_id, food_item) VALUES (?, ?)";
-
-    connection.query(query, [user_id, food_item], (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: "Food request submitted successfully" });
-    });
-});
-
-// Get Available Donations
+// Get all donations
 app.get("/donations", (req, res) => {
-    const query = "SELECT * FROM donations";
-
-    connection.query(query, (err, results) => {
-        if (err) return res.status(500).json({ error: err.message });
+    db.query("SELECT * FROM donations", (err, results) => {
+        if (err) return res.status(500).json({ error: "Database error" });
         res.json(results);
     });
 });
-// Get Requests
+
+/* ================= USER ROUTES ================= */
+
+// Register User
+app.post("/user/register", async (req, res) => {
+    const { name, password, phone, address, age } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    db.query(
+        "INSERT INTO users (name,password,phone,address,age) VALUES (?,?,?,?,?)",
+        [name, hashedPassword, phone, address, age],
+        (err, result) => {
+            if (err) return res.status(500).json({ error: "Database error" });
+            res.json({ message: "User registered successfully", userId: result.insertId });
+        }
+    );
+});
+
+// User → send request to donor
+app.post("/user/sendRequest", (req, res) => {
+    const { user_id, donor_id, food_item, quantity } = req.body;
+
+    db.query(
+        "INSERT INTO donor_requests (user_id, donor_id, food_item, quantity, status) VALUES (?,?,?,?, 'pending')",
+        [user_id, donor_id, food_item, quantity],
+        err => {
+            if (err) return res.status(500).json({ error: "Database error" });
+
+            db.query(
+                "UPDATE donations SET status='requested' WHERE donor_id=? AND food_item=?",
+                [donor_id, food_item]
+            );
+
+            res.json({ message: "Request sent to donor successfully!" });
+        }
+    );
+});
+
+// Get pending requests for food bank
 app.get("/requests", (req, res) => {
-    const query = "SELECT * FROM requests";
-
-    connection.query(query, (err, results) => {
-        if (err) return res.status(500).json({ error: err.message });
+    const sql = `
+        SELECT dr.id, u.name AS user_name, d.name AS donor_name, dr.food_item, dr.quantity, dr.status
+        FROM donor_requests dr
+        JOIN users u ON dr.user_id = u.id
+        JOIN donors d ON dr.donor_id = d.id
+        WHERE dr.status='pending'
+    `;
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: "Database error" });
         res.json(results);
     });
 });
 
-app.get("/", (req, res) => {
-    res.send("Food Bank API is running!");
-});
-app.get("/donations/available", (req, res) => {
-    const query = "SELECT * FROM donations WHERE quantity > 0";
-    connection.query(query, (err, results) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json(results);
-    });
+/* ================= FOOD BANK ROUTES ================= */
+
+// Food bank accepts request
+app.post("/foodbank/acceptRequest", (req, res) => {
+    const { request_id, donor_id } = req.body;
+
+    // Verify donor exists
+    db.query(
+        "SELECT id FROM donors WHERE id=?",
+        [donor_id],
+        (err, donorResult) => {
+            if (err) return res.status(500).json({ error: "Database error" });
+            if (donorResult.length === 0) return res.status(400).json({ error: "Donor ID not found" });
+
+            // Accept request
+            db.query(
+                "UPDATE donor_requests SET status='accepted' WHERE id=?",
+                [request_id],
+                err2 => {
+                    if (err2) return res.status(500).json({ error: "Database error" });
+
+                    db.query(
+                        "UPDATE donations SET status='accepted' WHERE donor_id=?",
+                        [donor_id]
+                    );
+
+                    res.json({ message: "Request accepted successfully" });
+                }
+            );
+        }
+    );
 });
 
-app.listen(3001, () => {
-    console.log("Server running on http://localhost:3001");
-});
+app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+
